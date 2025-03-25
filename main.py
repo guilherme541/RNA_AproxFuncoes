@@ -1,22 +1,19 @@
-# pip install numpy matplotlib scikit-learn
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.neural_network import MLPRegressor
 from sklearn.preprocessing import MaxAbsScaler
 
-# Parâmetros configuráveis
-ARQUIVO = 'teste5.npy'  # Arquivo a ser processado
+ARQUIVO = 'teste5.npy'
 ARQUITETURAS = [
-    (10,),          # Uma camada oculta com 10 neurônios
-    (15, 5),        # Duas camadas ocultas com 15 e 5 neurônios
-    (20, 10, 5)     # Três camadas ocultas com 20, 10 e 5 neurônios
+    (10,),
+    (15, 5),
+    (20, 10, 5)
 ]
-ITERACOES = 400     # Número de iterações para treinamento
-ATIVACAO = 'tanh'   # Função de ativação
-NUM_EXECUCOES = 10  # Número de execuções para cada arquitetura
+ITERACOES = 400
+ATIVACAO = 'tanh'
+NUM_EXECUCOES = 10
 
 def executar_simulacao(x, y, arquitetura, iteracoes=400, ativacao='tanh', num_execucoes=10):
-    """Executa a simulação várias vezes para obter média e desvio padrão"""
     erros = []
     melhor_erro = float('inf')
     melhor_modelo = None
@@ -27,7 +24,6 @@ def executar_simulacao(x, y, arquitetura, iteracoes=400, ativacao='tanh', num_ex
     for i in range(num_execucoes):
         print(f"  Execução {i+1}/{num_execucoes}")
         
-        # Configuração da rede neural
         regr = MLPRegressor(
             hidden_layer_sizes=arquitetura,
             max_iter=iteracoes,
@@ -38,23 +34,18 @@ def executar_simulacao(x, y, arquitetura, iteracoes=400, ativacao='tanh', num_ex
             verbose=False
         )
         
-        # Treinamento
         regr.fit(x, y)
         
-        # Predição
         y_est = regr.predict(x)
         
-        # Calcula erro médio quadrático
         erro = np.mean((y - y_est) ** 2)
         erros.append(erro)
         
-        # Salva o melhor modelo
         if erro < melhor_erro:
             melhor_erro = erro
             melhor_modelo = regr
             melhor_y_est = y_est
     
-    # Calcula estatísticas
     media_erro = np.mean(erros)
     desvio_padrao = np.std(erros)
     
@@ -77,7 +68,6 @@ def plotar_resultados(x, y, resultado, nome_arquivo):
     
     plt.figure(figsize=[14, 7])
     
-
     plt.subplot(1, 3, 1)
     plt.title('Função Original')
     plt.plot(x, y, color='green')
@@ -86,7 +76,6 @@ def plotar_resultados(x, y, resultado, nome_arquivo):
     plt.title(f'Curva erro ({modelo.best_loss_:.5f})')
     plt.plot(modelo.loss_curve_, color='red')
     
-
     plt.subplot(1, 3, 3)
     plt.title('Função Original x Função aproximada')
     plt.plot(x, y, linewidth=1, color='green', label='Original')
@@ -102,7 +91,6 @@ def plotar_resultados(x, y, resultado, nome_arquivo):
     plt.show()
 
 def processar_arquivo(nome_arquivo, arquiteturas, iteracoes=400, ativacao='tanh', num_execucoes=10):
-
     print(f'Carregando arquivo: {nome_arquivo}')
     arquivo = np.load(nome_arquivo)
     x = arquivo[0]
@@ -115,7 +103,6 @@ def processar_arquivo(nome_arquivo, arquiteturas, iteracoes=400, ativacao='tanh'
         resultado = executar_simulacao(x, y, arquitetura, iteracoes, ativacao, num_execucoes)
         resultados.append(resultado)
     
-
     melhor_resultado = min(resultados, key=lambda r: r['media_erro'])
     
     print("\n" + "="*70)
@@ -134,9 +121,6 @@ def processar_arquivo(nome_arquivo, arquiteturas, iteracoes=400, ativacao='tanh'
     plotar_resultados(x, y, melhor_resultado, nome_arquivo)
     
     return resultados, melhor_resultado
-
-
-
 
 if __name__ == "__main__":
     resultados, melhor = processar_arquivo(
